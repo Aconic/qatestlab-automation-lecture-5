@@ -8,6 +8,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.SkipException;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -39,6 +40,11 @@ public class DriverFactory {
                         "phantomjs.binary.path",
                         new File(DriverFactory.class.getResource("/phantomjs.exe").getFile()).getPath());
                 return new PhantomJSDriver();
+            case "opera":
+                System.setProperty(
+                        "webdriver.opera.driver",
+                        new File(DriverFactory.class.getResource("/operadriver.exe").getFile()).getPath());
+                return new PhantomJSDriver();
             case "chrome":
             default:
                 System.setProperty(
@@ -53,20 +59,38 @@ public class DriverFactory {
      * @param gridUrl URL to Grid.
      * @return New instance of {@link RemoteWebDriver} object.
      */
+
     public static WebDriver initDriver(String browser, String gridUrl) throws MalformedURLException {
         // TODO prepare capabilities for required browser and return RemoteWebDriver instance
-        Capabilities capabilities;
-        switch (browser) {
-            case "chrome":
+        DesiredCapabilities capabilities;
+        try {
+            switch (browser) {
+                case "firefox":
+                    capabilities = DesiredCapabilities.firefox();
+                    break;
+                case "ie":
+                case "internet explorer":
+                    capabilities = DesiredCapabilities.internetExplorer();
+                    break;
+                case "phantomjs":
+                    capabilities = DesiredCapabilities.phantomjs();
+                    break;
+                case "opera":
+                    capabilities = DesiredCapabilities.operaBlink();
+                    break;
+                case "android":
+                    capabilities = DesiredCapabilities.android();
+                    break;
                 default:
-                capabilities = DesiredCapabilities.chrome();
-                break;
-
-
+                case "chrome":
+                    capabilities = DesiredCapabilities.chrome();
+                    break;
+            }
+            return new RemoteWebDriver(new URL(gridUrl), capabilities);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SkipException("Unable to create RemoteWebDriver instance");
         }
-
-
-        return new RemoteWebDriver(new URL(gridUrl), capabilities);
     }
 }
 

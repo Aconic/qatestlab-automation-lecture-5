@@ -17,11 +17,10 @@ import java.util.List;
 public class PlaceOrderTest extends BaseTest {
 
     @Test
-
     public void checkSiteVersion() {
         // TODO open main page and validate website version
         driver.get(Properties.getBaseUrl());
-
+        Assert.assertFalse(isMobileTesting);
     }
 
     @Test
@@ -29,12 +28,10 @@ public class PlaceOrderTest extends BaseTest {
         // TODO implement order creation test
         driver.get(Properties.getBaseUrl());
         WebElement allProducts = driver.
-                findElement(By.xpath("//a[@class='all-product-link pull-xs-left pull-md-right h4']"));
+                findElement(By.xpath("//div//a[starts-with(@class,'all-product-link')]"));
         allProducts.click();
-
-        // open random product
+       // open random product
         actions.openRandomProduct();
-        actions.waitForContentLoad();
 
         // save product parameters
         ProductData productData = actions.getOpenedProductInfo();
@@ -94,7 +91,7 @@ public class PlaceOrderTest extends BaseTest {
 
         String actOrderName = driver.findElement(By.
                 xpath("//div[@class='order-line row']//div[2]/span")).getText();
-        actOrderName = actOrderName.substring(0, actOrderName.indexOf(" -"));
+        actOrderName = actOrderName.substring(0, actOrderName.indexOf(" - "));
         Assert.assertEquals(actOrderName.toLowerCase(), productData.getName());
 
         // check updated In Stock value

@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
  * Base script functionality, can be used for all Selenium scripts.
  */
 public abstract class BaseTest {
-  protected EventFiringWebDriver driver;
-//    protected WebDriver driver;
+  //  protected EventFiringWebDriver driver;
+    protected WebDriver driver;
     protected GeneralActions actions;
     protected boolean isMobileTesting;
 
@@ -36,24 +36,15 @@ public abstract class BaseTest {
      */
     @BeforeClass
     @Parameters({"selenium.browser", "selenium.grid"})
-    public void setUp(@Optional("chrome") String browser, @Optional("") String gridUrl) {
+    public void setUp(@Optional("chrome") String browser,
+                      @Optional("http://localhost:4444/wd/hub") String gridUrl) throws MalformedURLException {
         // TODO create WebDriver instance according to passed parameters
-//        try {
-//            DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-//            driver = new RemoteWebDriver(new URL(gridUrl),
-//                    capabilities);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new SkipException("Unable to create RemoteWebDriver instance");
-//        }
 
-        System.setProperty(
-                "webdriver.chrome.driver",
-                getResource("/chromedriver.exe"));
+          driver = DriverFactory.initDriver(browser,gridUrl);
 
+//        driver = new EventFiringWebDriver(DriverFactory.initDriver(browser));
+//        driver.register(new EventHandler());
 
-        driver = new EventFiringWebDriver(new ChromeDriver());
-        driver.register(new EventHandler());
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         // unable to maximize window in mobile mode
@@ -61,7 +52,6 @@ public abstract class BaseTest {
             driver.manage().window().maximize();
 
         isMobileTesting = isMobileTesting(browser);
-
         actions = new GeneralActions(driver);
     }
 
@@ -91,7 +81,6 @@ public abstract class BaseTest {
                 return false;
         }
     }
-
 
 
     private String getResource(String resourceName) {

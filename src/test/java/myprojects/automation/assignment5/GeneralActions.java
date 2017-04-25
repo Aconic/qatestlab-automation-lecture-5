@@ -22,7 +22,7 @@ public class GeneralActions {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    String itemUrl;
+    private String itemUrl;
 
     public GeneralActions(WebDriver driver) {
         this.driver = driver;
@@ -65,7 +65,7 @@ public class GeneralActions {
     }
 
     public void waitForContentLoad() {
-        wait.until(ExpectedConditions.elementToBeClickable(By.
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.
                 id("wrapper")));
     }
 
