@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -16,22 +17,25 @@ import java.util.List;
 
 public class PlaceOrderTest extends BaseTest {
 
+
     @Test
     public void checkSiteVersion() {
         // TODO open main page and validate website version
-        driver.get(Properties.getBaseUrl());
         Assert.assertFalse(isMobileTesting);
     }
 
     @Test
-    public void createNewOrder() {
+    public void createNewOrder() throws InterruptedException {
         // TODO implement order creation test
+
         driver.get(Properties.getBaseUrl());
         WebElement allProducts = driver.
-                findElement(By.xpath("//div//a[starts-with(@class,'all-product-link')]"));
+                findElement(By.xpath("//*[@id='content']/section/a"));
         allProducts.click();
-       // open random product
+
+        // open random product
         actions.openRandomProduct();
+        actions.waitForContentLoad();
 
         // save product parameters
         ProductData productData = actions.getOpenedProductInfo();
@@ -41,16 +45,17 @@ public class PlaceOrderTest extends BaseTest {
         actions.waitForModalLoad();
         driver.findElement(By.xpath("//a[contains(@class, 'btn') and contains(@class, 'btn-primary')]")).
                 click();
+        actions.waitForContentLoad();
 
         List<WebElement> cartItems = driver.findElements(By.xpath("//li[@class='cart-item']"));
-        Assert.assertEquals(cartItems.size(), 1);
-
         String actualName = driver.findElement(By.xpath("//div[@class='product-line-info']/a")).
                 getText().toLowerCase();
-        Assert.assertEquals(actualName, productData.getName());
-
         String actualPrice = driver.findElement(By.xpath("//span[@class='product-price']")).getText();
+
+        Assert.assertEquals(cartItems.size(), 1);
+        Assert.assertEquals(actualName, productData.getName());
         Assert.assertEquals(DataConverter.parsePriceValue(actualPrice), productData.getPrice());
+        actions.waitForContentLoad();
 
         // proceed to order creation, fill required information
         driver.findElement(By.xpath("//a[contains(@class, 'btn') and contains(@class, 'btn-primary')]")).
@@ -62,8 +67,10 @@ public class PlaceOrderTest extends BaseTest {
         driver.findElement(By.name("email")).sendKeys(actions.emailGenerator());
         driver.findElement(By.xpath("//button[@data-link-action='register-new-customer']"))
                 .click();
+        actions.waitForContentLoad();
 
         driver.findElement(By.xpath("//section[@id='checkout-addresses-step']")).click();
+        actions.waitForContentLoad();
         driver.findElement(By.xpath("//input[@name='address1']")).
                 sendKeys("Test Address, 1");
         driver.findElement(By.xpath("//input[@name='postcode']")).
@@ -73,11 +80,16 @@ public class PlaceOrderTest extends BaseTest {
         driver.findElement(By.xpath("//button[@name='confirm-addresses']")).
                 click();
         actions.waitForContentLoad();
-        driver.findElement(By.xpath("//button[@name='confirmDeliveryOption']")).
+
+        driver.findElement(By.xpath("//*[@id='js-delivery']/button")).
                 click();
+        wait(500);
+
+        WebElement paymentOption = driver.findElement(By.xpath("//*[@id='payment-option-1']"));
+        paymentOption.click();
+        WebElement terms = driver.findElement(By.xpath("//*[@id='conditions_to_approve[terms-and-conditions]']"));
+        terms.click();
         actions.waitForContentLoad();
-        driver.findElement(By.id("payment-option-1")).click();
-        driver.findElement(By.id("conditions_to_approve[terms-and-conditions]")).click();
 
         driver.findElement(By.xpath("//div[@id='payment-confirmation']//button[@type='submit']"))
                 .click();
@@ -87,23 +99,21 @@ public class PlaceOrderTest extends BaseTest {
         String actualMessage = driver.findElement(By.xpath("//h3[contains(@class, 'h1') and contains(@class, 'card-title')]")).
                 getText().toUpperCase();
         actualMessage = actualMessage.substring(1, actualMessage.length());
-        Assert.assertEquals(actualMessage, "ВАШ ЗАКАЗ ПОДТВЕРЖДЁН");
-
         String actOrderName = driver.findElement(By.
                 xpath("//div[@class='order-line row']//div[2]/span")).getText();
-        actOrderName = actOrderName.substring(0, actOrderName.indexOf(" - "));
-        Assert.assertEquals(actOrderName.toLowerCase(), productData.getName());
+        actOrderName = actOrderName.substring(0, actOrderName.indexOf(" - Size"));
+
+        Assert.assertEquals(actualMessage, "ВАШ ЗАКАЗ ПОДТВЕРЖДЁН");
+        Assert.assertEquals(actOrderName.toLowerCase(), productData.getName().toLowerCase());
 
         // check updated In Stock value
         driver.get(actions.getItemUrl());
-        actions.waitForContentLoad();
-
+        actions.waitForElementClickable("//a[@href='#product-details']");
         driver.findElement(By.xpath("//a[@href='#product-details']")).click();
         actions.waitForDetailsTabLoad();
 
         String actQty = driver.findElement(By.xpath("//div[@class='product-quantities']/span")).
                 getText();
-
         Assert.assertEquals(DataConverter.parseStockValue(actQty), productData.getQty() - 1);
     }
 

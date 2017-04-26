@@ -31,10 +31,9 @@ public class GeneralActions {
 
     public void openRandomProduct() {
         // TODO implement logic to open random product before purchase
-
         Random random = new Random();
         List<WebElement> products = driver.findElements(By.
-                xpath("//div[@class='product-description']/h1/a"));
+                xpath("//*[@id='js-product-list']/div[1]/article/div/div[@class='product-description']"));
         products.get(random.nextInt(products.size())).click();
     }
 
@@ -46,12 +45,16 @@ public class GeneralActions {
     public ProductData getOpenedProductInfo() {
         CustomReporter.logAction("Get information about currently opened product");
         itemUrl = driver.getCurrentUrl();
-        driver.findElement(By.xpath("//a[@href='#product-details']")).click();
-
+        driver.findElement(By.xpath("//*[@id='main']/div[1]/div[2]/div[2]/div[3]/ul/li[2]/a")).
+                click();
         waitForDetailsTabLoad();
+
         String name = driver.findElement(By.xpath("//h1[@itemprop='name']")).getText();
         String qty = driver.findElement(By.xpath("//div[@class='product-quantities']/span")).
                 getText();
+        if(qty.equals("")){
+            qty = "0";
+        }
         String strPrice = driver.findElement(By.xpath("//div[@class='current-price']/span")).
                 getText();
         return new ProductData(name.toLowerCase(), DataConverter.parseStockValue(qty),
@@ -65,21 +68,27 @@ public class GeneralActions {
     }
 
     public void waitForContentLoad() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.
-                id("wrapper")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("wrapper")));
     }
 
+    public void waitForElementClickable(String xpath) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+    }
     public void waitForModalLoad() {
         wait.until(ExpectedConditions.elementToBeClickable(By.
                 xpath("//a[contains(@class, 'btn') and contains(@class, 'btn-primary')]")));
     }
 
-    public void waitForDetailsTabLoad(){
+    public void waitForDetailsTabLoad() {
         wait.until(ExpectedConditions.elementToBeClickable(By.
                 xpath("//h1[@itemprop='name']")));
     }
-    public String getItemUrl(){
+
+    public String getItemUrl() {
         return itemUrl;
+    }
+    public WebDriverWait getDriverWait() {
+        return wait;
     }
 
 }

@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
  * Base script functionality, can be used for all Selenium scripts.
  */
 public abstract class BaseTest {
-  //  protected EventFiringWebDriver driver;
-    protected WebDriver driver;
+   protected EventFiringWebDriver driver;
+//    protected WebDriver driver;
     protected GeneralActions actions;
     protected boolean isMobileTesting;
 
@@ -36,14 +36,13 @@ public abstract class BaseTest {
      */
     @BeforeClass
     @Parameters({"selenium.browser", "selenium.grid"})
-    public void setUp(@Optional("chrome") String browser,
+    public void setUp(@Optional("") String browser,
                       @Optional("http://localhost:4444/wd/hub") String gridUrl) throws MalformedURLException {
         // TODO create WebDriver instance according to passed parameters
 
-          driver = DriverFactory.initDriver(browser,gridUrl);
-
-//        driver = new EventFiringWebDriver(DriverFactory.initDriver(browser));
-//        driver.register(new EventHandler());
+//          driver = DriverFactory.initDriver(browser,gridUrl);
+        driver = new EventFiringWebDriver(DriverFactory.initDriver(browser));
+        driver.register(new EventHandler());
 
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);

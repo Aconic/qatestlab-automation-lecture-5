@@ -34,6 +34,18 @@
                             <name>listener</name>
                             <value>org.uncommons.reportng.HTMLReporter</value>
                         </property>
+                        <property>
+                            <name>parallel</name>
+                            <value>methods</value>
+                        </property>
+                        <property>
+                            <name>threadCount</name>
+                            <value>3</value>
+                        </property>
+                        <property>
+                            <name>dataproviderthreadcount</name>
+                            <value>6</value>
+                        </property>
                     </properties>
                     <suiteXmlFiles>
                         <suiteXmlFile>${project.build.testOutputDirectory}/testng.xml</suiteXmlFile>
@@ -41,6 +53,7 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
 
     <dependencies>
