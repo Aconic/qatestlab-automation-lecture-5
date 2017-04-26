@@ -26,7 +26,7 @@ public class GeneralActions {
 
     public GeneralActions(WebDriver driver) {
         this.driver = driver;
-        wait = new WebDriverWait(driver, 30);
+        wait = new WebDriverWait(driver, 45);
     }
 
     public void openRandomProduct() {
@@ -45,6 +45,7 @@ public class GeneralActions {
     public ProductData getOpenedProductInfo() {
         CustomReporter.logAction("Get information about currently opened product");
         itemUrl = driver.getCurrentUrl();
+        waitForContentLoad();
         driver.findElement(By.xpath("//*[@id='main']/div[1]/div[2]/div[2]/div[3]/ul/li[2]/a")).
                 click();
         waitForDetailsTabLoad();
