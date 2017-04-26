@@ -83,7 +83,6 @@ public class PlaceOrderTest extends BaseTest {
 
         driver.findElement(By.xpath("//*[@id='js-delivery']/button")).
                 click();
-        wait(500);
 
         WebElement paymentOption = driver.findElement(By.xpath("//*[@id='payment-option-1']"));
         paymentOption.click();
