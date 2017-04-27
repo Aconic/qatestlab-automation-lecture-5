@@ -35,7 +35,7 @@ public class PlaceOrderTest extends BaseTest {
         // open random product
         actions.openRandomProduct();
         actions.waitForContentLoad();
-
+        String itemUrl = driver.getCurrentUrl();
         // save product parameters
         ProductData productData = actions.getOpenedProductInfo();
 
@@ -106,7 +106,7 @@ public class PlaceOrderTest extends BaseTest {
         Assert.assertEquals(actOrderName.toLowerCase(), productData.getName().toLowerCase());
 
         // check updated In Stock value
-        driver.get(actions.getItemUrl());
+        driver.get(itemUrl);
         actions.waitForElementClickable("//a[@href='#product-details']");
         driver.findElement(By.xpath("//a[@href='#product-details']")).click();
         actions.waitForDetailsTabLoad();

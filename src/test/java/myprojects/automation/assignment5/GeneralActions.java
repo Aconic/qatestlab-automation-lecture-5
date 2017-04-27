@@ -22,7 +22,7 @@ public class GeneralActions {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    private String itemUrl;
+
 
     public GeneralActions(WebDriver driver) {
         this.driver = driver;
@@ -33,7 +33,7 @@ public class GeneralActions {
         // TODO implement logic to open random product before purchase
         Random random = new Random();
         List<WebElement> products = driver.findElements(By.
-                xpath("//*[@id='js-product-list']/div[1]/article/div/div[@class='product-description']"));
+                xpath("//div[@class='product-description']"));
         products.get(random.nextInt(products.size())).click();
     }
 
@@ -44,11 +44,11 @@ public class GeneralActions {
      */
     public ProductData getOpenedProductInfo() {
         CustomReporter.logAction("Get information about currently opened product");
-        itemUrl = driver.getCurrentUrl();
+
         waitForContentLoad();
         driver.findElement(By.xpath("//*[@id='main']/div[1]/div[2]/div[2]/div[3]/ul/li[2]/a")).
                 click();
-        waitForDetailsTabLoad();
+       waitForDetailsTabLoad();
 
         String name = driver.findElement(By.xpath("//h1[@itemprop='name']")).getText();
         String qty = driver.findElement(By.xpath("//div[@class='product-quantities']/span")).
@@ -85,9 +85,6 @@ public class GeneralActions {
                 xpath("//h1[@itemprop='name']")));
     }
 
-    public String getItemUrl() {
-        return itemUrl;
-    }
     public WebDriverWait getDriverWait() {
         return wait;
     }
